@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:prueba_tecnica/core/error/failure.dart';
+import 'package:prueba_tecnica/features/products_control/data/models/product_model.dart';
 
 import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
@@ -12,7 +13,7 @@ class GetProduct {
 
   
 
-  Future<Either<Failure, ProductEntity>> call() async {
-    return await productRepository.getProduct();
+  Future<Either<Failure, List<ProductModel>>> call() async {
+    return await productRepository.getProducts();
   }
 }

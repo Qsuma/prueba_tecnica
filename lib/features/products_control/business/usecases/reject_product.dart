@@ -1,7 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:prueba_tecnica/core/error/failure.dart';
-
-import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
 
 class RejectProduct {
@@ -12,7 +10,7 @@ class RejectProduct {
 
   
 
-  Future<Either<Failure, ProductEntity>> call() async {
-    return await productRepository.rejectProduct();
+  Future<Either<Failure, void>> call(String id) async {
+    return await productRepository.rejectProduct(id);
   }
 }

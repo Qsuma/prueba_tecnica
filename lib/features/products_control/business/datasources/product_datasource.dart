@@ -5,12 +5,11 @@ import 'package:prueba_tecnica/features/products_control/data/models/product_mod
 
 abstract class ProductDatasource {
   
-  Future< ProductModel> approveProduct();
-  Future< ProductModel> rejectProduct();
-  Future< ProductModel> createProducts(List<ProductModel>products);
+  Future< void> approveProduct(String id);
+  Future< void> rejectProduct(String id);
+  Future<void> createProducts(List<ProductModel>products);
   Future< List<ProductModel>> getProducts();
-  Future< ProductModel> updateProduct();
-  Future< ProductModel> deleteProduct();
+  Future<void> deleteProduct(String id);
 
 
 

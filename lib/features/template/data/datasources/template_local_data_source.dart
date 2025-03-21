@@ -1,5 +1,6 @@
 import 'dart:convert';
-import '../../../../../core/errors/exceptions.dart';
+import 'package:prueba_tecnica/core/error/exceptions.dart';
+
 import '../models/template_model.dart';
 
 abstract class TemplateLocalDataSource {
@@ -10,13 +11,13 @@ abstract class TemplateLocalDataSource {
 const cachedTemplate = 'CACHED_TEMPLATE';
 
 class TemplateLocalDataSourceImpl implements TemplateLocalDataSource {
-  final SharedPreferences sharedPreferences;
 
-  TemplateLocalDataSourceImpl({required this.sharedPreferences});
+
+  TemplateLocalDataSourceImpl();
 
   @override
   Future<TemplateModel> getLastTemplate() {
-    final jsonString = sharedPreferences.getString(cachedTemplate);
+    final jsonString = '';
 
     if (jsonString != null) {
       return Future.value(TemplateModel.fromJson(json: json.decode(jsonString)));
@@ -28,12 +29,7 @@ class TemplateLocalDataSourceImpl implements TemplateLocalDataSource {
   @override
   Future<void> cacheTemplate({required TemplateModel? templateToCache}) async {
     if (templateToCache != null) {
-      sharedPreferences.setString(
-        cachedTemplate,
-        json.encode(
-          templateToCache.toJson(),
-        ),
-      );
+    //insertar en bd
     } else {
       throw CacheException();
     }

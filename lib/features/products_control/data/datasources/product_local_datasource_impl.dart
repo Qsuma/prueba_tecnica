@@ -1,43 +1,43 @@
-import 'dart:convert';
-
-import 'package:dartz/dartz.dart';
 import 'package:prueba_tecnica/core/error/exceptions.dart';
-import 'package:prueba_tecnica/core/error/failure.dart';
 import 'package:prueba_tecnica/core/local_database/product_database.dart';
 import 'package:prueba_tecnica/features/products_control/business/datasources/product_datasource.dart';
-import 'package:prueba_tecnica/features/products_control/business/entities/product_entity.dart';
-import 'package:prueba_tecnica/features/products_control/business/repositories/product_repository.dart';
-import 'package:prueba_tecnica/features/products_control/data/datasources/template_local_data_source.dart';
-
+import 'package:sqflite/sqflite.dart';
 import '../models/product_model.dart';
 
 class ProductLocalDataSourceImpl implements ProductDatasource {
-  ProductDatabase productDatabase = ProductDatabase();
+  final ProductDatabase productDatabase =  ProductDatabase();
 
-  ProductLocalDataSourceImpl();
-
-  @override
-  Future<void> cacheProducts({required TemplateModel? templateToCache}) async {}
+  
 
   @override
-  Future<ProductModel> approveProduct() {
-    // TODO: implement approveProduct
-    throw UnimplementedError();
+  Future<void> deleteProduct(String id) async {
+    try {
+      final db = await productDatabase.database;
+      await db.delete('products', where: 'id = ?', whereArgs: [id]);
+    } catch (e) {
+      throw CacheException();
+    }
   }
 
   @override
-  Future<ProductModel> deleteProduct() {
-    // TODO: implement deleteProduct
-    throw UnimplementedError();
-  }
+  Future<void> createProducts(List<ProductModel> products) async {
+    final db = await productDatabase.database;
+    final List<Map<String, dynamic>> maps = await db.query('products');
 
-  @override
-  Future<ProductModel> createProducts() {
-    if (templateToCache != null) {
-      sharedPreferences.setString(
-        cachedTemplate,
-        json.encode(templateToCache.toJson()),
-      );
+    if (maps.isEmpty) {
+      try {
+        await Future.wait(
+          products.map((product) async {
+            await db.insert(
+              'products',
+              product.toMap(),
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
+          }),
+        );
+      } catch (e) {
+        throw CacheException();
+      }
     } else {
       throw CacheException();
     }
@@ -45,25 +45,41 @@ class ProductLocalDataSourceImpl implements ProductDatasource {
 
   @override
   Future<List<ProductModel>> getProducts() async {
-    final db = await productDatabase.database;
-    final List<Map<String, dynamic>> maps = await db.query('products');
+    try {
+      final db = await productDatabase.database;
+      final List<Map<String, dynamic>> maps = await db.query('products');
 
-    if (maps.isNotEmpty) {
-      return maps.map((map) => ProductModel.fromMap(map)).toList();
-    } else {
+      if (maps.isNotEmpty) {
+        return maps.map((map) => ProductModel.fromMap(map)).toList();
+      } else {
+        return []; 
+      }
+    } catch (e) {
       throw CacheException();
     }
   }
 
   @override
-  Future<ProductModel> rejectProduct() {
-    // TODO: implement rejectProduct
-    throw UnimplementedError();
+  Future<void> rejectProduct(String id) async {
+    await _updateApprovalStatus(id, false);
   }
 
   @override
-  Future<ProductModel> updateProduct() {
-    // TODO: implement updateProduct
-    throw UnimplementedError();
+  Future<void> approveProduct(String id) async {
+    await _updateApprovalStatus(id, true);
+  }
+
+  Future<void> _updateApprovalStatus(String id, bool isApproved) async {
+    try {
+      final db = await productDatabase.database;
+      await db.update(
+        'products',
+        {'aprobed': isApproved ? 1 : 0},
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    } catch (e) {
+      throw CacheException();
+    }
   }
 }

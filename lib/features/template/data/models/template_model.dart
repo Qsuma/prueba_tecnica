@@ -1,22 +1,13 @@
-import '../../../../../core/constants/constants.dart';
 import '../../business/entities/template_entity.dart';
 
 class TemplateModel extends TemplateEntity {
-  const TemplateModel({
-    required String template,
-  }) : super(
-          template: template,
-        );
+  const TemplateModel({required super.template});
 
   factory TemplateModel.fromJson({required Map<String, dynamic> json}) {
-    return TemplateModel(
-      template: json[kTemplate],
-    );
+    return TemplateModel(template: json['']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      kTemplate: template,
-    };
+    return {'': template};
   }
 }

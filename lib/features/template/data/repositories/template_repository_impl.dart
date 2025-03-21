@@ -1,9 +1,8 @@
 import 'package:dartz/dartz.dart';
+import 'package:prueba_tecnica/core/conection/network_info.dart';
+import 'package:prueba_tecnica/core/error/exceptions.dart';
+import 'package:prueba_tecnica/core/error/failure.dart';
 
-import '../../../../../core/connection/network_info.dart';
-import '../../../../../core/errors/exceptions.dart';
-import '../../../../../core/errors/failure.dart';
-import '../../../../../core/params/params.dart';
 import '../../business/repositories/template_repository.dart';
 import '../datasources/template_local_data_source.dart';
 import '../datasources/template_remote_data_source.dart';
@@ -21,12 +20,11 @@ class TemplateRepositoryImpl implements TemplateRepository {
   });
 
   @override
-  Future<Either<Failure, TemplateModel>> getTemplate(
-      {required TemplateParams templateParams}) async {
+  Future<Either<Failure, TemplateModel>> getTemplate() async {
     if (await networkInfo.isConnected!) {
       try {
         TemplateModel remoteTemplate =
-            await remoteDataSource.getTemplate(templateParams: templateParams);
+            await remoteDataSource.getTemplate();
 
         localDataSource.cacheTemplate(templateToCache: remoteTemplate);
 

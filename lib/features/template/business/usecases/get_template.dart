@@ -1,7 +1,5 @@
 import 'package:dartz/dartz.dart';
-
-import '../../../../../core/errors/failure.dart';
-import '../../../../../core/params/params.dart';
+import 'package:prueba_tecnica/core/error/failure.dart';
 import '../entities/template_entity.dart';
 import '../repositories/template_repository.dart';
 
@@ -10,9 +8,7 @@ class GetTemplate {
 
   GetTemplate({required this.templateRepository});
 
-  Future<Either<Failure, TemplateEntity>> call({
-    required TemplateParams templateParams,
-  }) async {
-    return await templateRepository.getTemplate(templateParams: templateParams);
+  Future<Either<Failure, TemplateEntity>> call() async {
+    return await templateRepository.getTemplate();
   }
 }

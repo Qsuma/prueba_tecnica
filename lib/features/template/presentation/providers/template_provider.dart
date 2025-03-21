@@ -3,11 +3,8 @@ import 'package:data_connection_checker_tv/data_connection_checker.dart';
 import 'package:dio/dio.dart';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../../../core/connection/network_info.dart';
-import '../../../../../core/errors/failure.dart';
-import '../../../../../core/params/params.dart';
+import 'package:prueba_tecnica/core/conection/network_info.dart';
+import 'package:prueba_tecnica/core/error/failure.dart';
 import '../../business/entities/template_entity.dart';
 import '../../business/usecases/get_template.dart';
 import '../../data/datasources/template_local_data_source.dart';
@@ -29,7 +26,6 @@ class TemplateProvider extends ChangeNotifier {
         dio: Dio(),
       ),
       localDataSource: TemplateLocalDataSourceImpl(
-        sharedPreferences: await SharedPreferences.getInstance(),
       ),
       networkInfo: NetworkInfoImpl(
         DataConnectionChecker(),
@@ -37,7 +33,6 @@ class TemplateProvider extends ChangeNotifier {
     );
 
     final failureOrTemplate = await GetTemplate(templateRepository: repository).call(
-      templateParams: TemplateParams(),
     );
 
     failureOrTemplate.fold(
