@@ -8,7 +8,7 @@ class ProductModel extends ProductEntity {
     required super.images,
     required super.name,
     required super.description,
-    required super.price,
+
     required super.id,
   });
   ProductModel copyWith({
@@ -16,14 +16,12 @@ class ProductModel extends ProductEntity {
     List<String>? images,
     String? name,
     String? description,
-    double? price,
     String? id,
   }) => ProductModel(
     aprobed: aprobed ?? this.aprobed,
     images: images ?? this.images,
     name: name ?? this.name,
     description: description ?? this.description,
-    price: price ?? this.price,
     id: id ?? this.id,
   );
 
@@ -37,16 +35,16 @@ class ProductModel extends ProductEntity {
     images: List<String>.from(json['images'] ?? []),
     name: json["name"],
     description: json["description"],
-    price: json["price"]?.toDouble(),
     id: json["id"],
   );
 
   Map<String, dynamic> toMap() => {
-    "aprobed": aprobed,
-    "images": List<dynamic>.from(images.map((x) => x)),
-    "name": name,
-    "description": description,
-    "price": price,
-    "id": id,
-  };
+      
+        "aprobed": aprobed.toString(),
+       
+        "images": images.join(','),
+        "name": name,
+        "description": description,
+        "id": id,
+      };
 }

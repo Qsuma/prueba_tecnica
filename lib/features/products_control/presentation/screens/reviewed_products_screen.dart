@@ -12,60 +12,74 @@ class ReviewedProductsScreen extends StatefulWidget {
 
 class _ReviewedProductsScreenState extends State<ReviewedProductsScreen> {
   final ScrollController _scrollController = ScrollController();
-  int _currentPage = 1;
+  List<dynamic> _displayedProducts = [];
+  int _currentPage = 0;
   final int _itemsPerPage = 7;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _loadMoreProducts();
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      setState(() {
-        _currentPage++;
-      });
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 100 &&
+        !_isLoading) {
+      _loadMoreProducts();
     }
+  }
+
+  void _loadMoreProducts() {
+    final provider = Provider.of<ProductProvider>(context, listen: false);
+    final reviewedProducts = provider.reviewedproducts;
+
+    if (_isLoading || _displayedProducts.length >= reviewedProducts.length)
+      return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    Future.delayed(const Duration(seconds: 1), () {
+      final nextProducts =
+          reviewedProducts
+              .skip(_currentPage * _itemsPerPage)
+              .take(_itemsPerPage)
+              .toList();
+
+      setState(() {
+        _displayedProducts.addAll(nextProducts);
+        _currentPage++;
+        _isLoading = false;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ProductProvider>(context);
-    final reviewedProducts = provider.products
-        ?.where((product) => product.aprobed != null)
-        .toList();
-
-    final paginatedProducts = reviewedProducts
-            ?.skip((_currentPage - 1) * _itemsPerPage)
-            .take(_itemsPerPage)
-            .toList() ??
-        [];
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Productos Revisados'),
-      ),
-      body: reviewedProducts == null || reviewedProducts.isEmpty
-          ? const Center(child: Text('No hay productos revisados'))
-          : ListView.builder(
-              controller: _scrollController,
-              itemCount: paginatedProducts.length + 1,
-              itemBuilder: (context, index) {
-                if (index < paginatedProducts.length) {
-                  final product = paginatedProducts[index];
-                  return ReviewedProductCard(product: product);
-                } else {
-                  return _currentPage * _itemsPerPage < reviewedProducts.length
-                      ? const Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      : const SizedBox();
-                }
-              },
-            ),
+      appBar: AppBar(title: const Text('Productos Revisados')),
+      body:
+          _displayedProducts.isEmpty
+              ? const Center(child: Text('No hay productos revisados'))
+              : ListView.builder(
+                controller: _scrollController,
+                itemCount: _displayedProducts.length + (_isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index < _displayedProducts.length) {
+                    final product = _displayedProducts[index];
+                    return ReviewedProductCard(product: product);
+                  } else {
+                    return const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                },
+              ),
     );
   }
 

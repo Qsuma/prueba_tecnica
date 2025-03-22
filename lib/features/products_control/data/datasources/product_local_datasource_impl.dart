@@ -5,9 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import '../models/product_model.dart';
 
 class ProductLocalDataSourceImpl implements ProductDatasource {
-  final ProductDatabase productDatabase =  ProductDatabase();
-
-  
+  final ProductDatabase productDatabase = ProductDatabase();
 
   @override
   Future<void> deleteProduct(String id) async {
@@ -52,7 +50,7 @@ class ProductLocalDataSourceImpl implements ProductDatasource {
       if (maps.isNotEmpty) {
         return maps.map((map) => ProductModel.fromMap(map)).toList();
       } else {
-        return []; 
+        return [];
       }
     } catch (e) {
       throw CacheException();
@@ -60,23 +58,27 @@ class ProductLocalDataSourceImpl implements ProductDatasource {
   }
 
   @override
-  Future<void> rejectProduct(String id) async {
-    await _updateApprovalStatus(id, false);
+  Future<void> rejectProduct(ProductModel product) async {
+    await _insertProductWithApprovalStatus(product, false);
   }
 
   @override
-  Future<void> approveProduct(String id) async {
-    await _updateApprovalStatus(id, true);
+  Future<void> approveProduct(ProductModel product) async {
+    await _insertProductWithApprovalStatus(product, true);
   }
 
-  Future<void> _updateApprovalStatus(String id, bool isApproved) async {
+  Future<void> _insertProductWithApprovalStatus(
+    ProductModel product,
+    bool isApproved,
+  ) async {
     try {
       final db = await productDatabase.database;
-      await db.update(
+   
+
+      await db.insert(
         'products',
-        {'aprobed': isApproved ? 1 : 0},
-        where: 'id = ?',
-        whereArgs: [id],
+        product.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
       throw CacheException();

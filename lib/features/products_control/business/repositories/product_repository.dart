@@ -7,8 +7,8 @@ abstract class ProductRepository {
   final ProductDatasource remoteProductDatasource;
 
   ProductRepository({required this.remoteProductDatasource});
-  Future<Either<Failure, void>> approveProduct(String id);
-  Future<Either<Failure, void>> rejectProduct(String id);
+  Future<Either<Failure, void>> approveProduct(ProductModel product);
+  Future<Either<Failure, void>> rejectProduct(ProductModel product);
   Future<Either<Failure, void>> createProduct(
     List<ProductModel> products,
   );

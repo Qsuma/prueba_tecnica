@@ -30,7 +30,7 @@ class ProductRemoteDataSourceImpl implements ProductDatasource {
   }
 
   @override
-  Future<void> approveProduct(String id) {
+  Future<void> approveProduct(ProductModel product) {
     // TODO: implement approveProduct
     throw UnimplementedError();
   }
@@ -48,7 +48,7 @@ class ProductRemoteDataSourceImpl implements ProductDatasource {
   }
 
   @override
-  Future<void> rejectProduct(String id) {
+  Future<void> rejectProduct(ProductModel product) {
     // TODO: implement rejectProduct
     throw UnimplementedError();
   }

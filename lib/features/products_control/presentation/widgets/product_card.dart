@@ -40,7 +40,6 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-
               // Información del producto
               Expanded(
                 child: Column(
@@ -56,7 +55,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      product.description ?? 'Sin descripción',
+                      product.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(color: Colors.grey),
@@ -64,15 +63,15 @@ class ProductCard extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Checkboxes para aprobar o rechazar
+              // Opciones de aprobación y rechazo
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Checkbox para aprobar
                   Row(
                     children: [
                       Checkbox(
-                        value: product.aprobed == true, // Aprobado
+                        value: product.aprobed,
                         onChanged: (value) {
                           if (value == true) {
                             provider.eitherFailureOrApproveProducts(product);
@@ -82,18 +81,14 @@ class ProductCard extends StatelessWidget {
                       const Text("Aprobar"),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: product.aprobed == false, // Rechazado
-                        onChanged: (value) {
-                          if (value == true) {
-                            provider.eitherFailureOrRejectProducts(product);
-                          }
-                        },
-                      ),
-                      const Text("Rechazar"),
-                    ],
+                  // Botón de rechazo: icono de basurero en rojo
+                  IconButton(
+                    onPressed: () {
+                      provider.eitherFailureOrRejectProducts(product);
+                    },
+                    icon: const Icon(Icons.delete),
+                    color: Colors.red,
+                    tooltip: 'Rechazar',
                   ),
                 ],
               ),

@@ -20,7 +20,7 @@ class ProductDatabase {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
     );
   }
@@ -32,8 +32,7 @@ class ProductDatabase {
         id TEXT PRIMARY KEY,
         name TEXT,
         description TEXT,
-        price REAL,
-        aprobed INTEGER,
+        aprobed TEXT,
         images TEXT
       )
     ''');

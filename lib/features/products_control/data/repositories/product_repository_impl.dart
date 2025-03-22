@@ -21,9 +21,9 @@ class ProductRepositoryImpl implements ProductRepository {
   });
 
   @override
-  Future<Either<Failure, void>> approveProduct(String id) async {
+  Future<Either<Failure, void>> approveProduct(ProductModel product) async {
     try {
-      await localProductDataSource.approveProduct(id);
+      await localProductDataSource.approveProduct(product);
       return Right(null);
     } on CacheException {
       return Left(
@@ -85,9 +85,9 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, void>> rejectProduct(String id) async {
+  Future<Either<Failure, void>> rejectProduct(ProductModel product) async {
     try {
-      await localProductDataSource.rejectProduct(id);
+      await localProductDataSource.rejectProduct(product);
       return Right(null);
     } on CacheException {
       return Left(
