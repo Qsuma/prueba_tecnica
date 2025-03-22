@@ -22,8 +22,8 @@ class ProductRemoteDataSourceImpl implements ProductDatasource {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonList = jsonDecode(response.data);
-      return jsonList.map((json) => ProductModel.fromJson(json)).toList();
+      final List<dynamic> jsonList = response.data;
+      return jsonList.map((json) => ProductModel.fromMap(json)).toList();
     } else {
       throw ServerException();
     }

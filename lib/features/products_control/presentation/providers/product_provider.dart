@@ -13,11 +13,13 @@ import '../../business/usecases/reject_product.dart';
 
 import '../../data/repositories/product_repository_impl.dart';
 
-class TemplateProvider extends ChangeNotifier {
-  List<ProductModel>? products;
+class ProductProvider extends ChangeNotifier {
+  List<ProductModel>? products = [];
   Failure? failure;
 
-  TemplateProvider({this.products, this.failure});
+  ProductProvider() {
+    eitherFailureOrProducts();
+  }
 
   void eitherFailureOrProducts() async {
     ProductRepositoryImpl repository = ProductRepositoryImpl(
@@ -54,12 +56,14 @@ class TemplateProvider extends ChangeNotifier {
       productRepository: repository,
     ).call(product.id);
 
-      failureOrProduct.fold(
+    failureOrProduct.fold(
       (Failure newFailure) {
         failure = newFailure;
       },
       (s) {
-        final index = products!.indexWhere((element) => element.id == product.id);
+        final index = products!.indexWhere(
+          (element) => element.id == product.id,
+        );
         if (index != -1) {
           products![index] = product.copyWith(aprobed: true);
         }
@@ -68,7 +72,8 @@ class TemplateProvider extends ChangeNotifier {
     );
     notifyListeners();
   }
-    void eitherFailureOrRejectProducts(ProductModel product) async {
+
+  void eitherFailureOrRejectProducts(ProductModel product) async {
     ProductRepositoryImpl repository = ProductRepositoryImpl(
       remoteProductDatasource: ProductRemoteDataSourceImpl(),
       networkInfo: NetworkInfoImpl(DataConnectionChecker()),
@@ -79,12 +84,14 @@ class TemplateProvider extends ChangeNotifier {
       productRepository: repository,
     ).call(product.id);
 
-      failureOrProduct.fold(
+    failureOrProduct.fold(
       (Failure newFailure) {
         failure = newFailure;
       },
       (s) {
-        final index = products!.indexWhere((element) => element.id == product.id);
+        final index = products!.indexWhere(
+          (element) => element.id == product.id,
+        );
         if (index != -1) {
           products![index] = product.copyWith(aprobed: false);
         }

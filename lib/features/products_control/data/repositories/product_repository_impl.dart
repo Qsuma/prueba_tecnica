@@ -50,38 +50,43 @@ class ProductRepositoryImpl implements ProductRepository {
     throw UnimplementedError();
   }
 
-@override
-Future<Either<Failure, List<ProductModel>>> getProducts() async {
-  try {
-    final localProducts = await localProductDataSource.getProducts();
+  @override
+  Future<Either<Failure, List<ProductModel>>> getProducts() async {
+    try {
+      // final localProducts = await localProductDataSource.getProducts();
 
-    if (await networkInfo.isConnected!) {
-      final remoteProducts = await remoteProductDatasource.getProducts();
+      if (await networkInfo.isConnected!) {
+        final remoteProducts = await remoteProductDatasource.getProducts();
 
-      // Comprobar si los productos remotos ya están en local
-      final localProductIds = localProducts.map((p) => p.id).toSet();
-      final remoteProductIds = remoteProducts.map((p) => p.id).toSet();
+        // Comprobar si los productos remotos ya están en local
+        // final localProductIds = localProducts.map((p) => p.id).toSet();
+        //final remoteProductIds = remoteProducts.map((p) => p.id).toSet();
 
-      if (!localProductIds.containsAll(remoteProductIds)) {
-        await localProductDataSource.createProducts(remoteProducts);
+        // if (!localProductIds.containsAll(remoteProductIds)) {
+        //   await localProductDataSource.createProducts(remoteProducts);
+        // }
+
+        return Right(remoteProducts);
+      } else {
+       return Left(UnknownFailure(errorMessage: 'No esta conectado'));
+        //   return Right(remoteProducts); // No hay internet, usar datos locales
       }
-
-      return Right(remoteProducts);
-    } else {
-      return Right(localProducts); // No hay internet, usar datos locales
+    } on CacheException {
+      return Left(
+        CacheFailure(
+          errorMessage: 'No hay productos en la base de datos local.',
+        ),
+      );
+    } catch (e) {
+      return Left(
+        UnknownFailure(errorMessage: 'Error desconocido: ${e.toString()}'),
+      );
     }
-  } on ServerException {
-    return Right(await localProductDataSource.getProducts()); // Usa locales si el servidor falla
-  } on CacheException {
-    return Left(CacheFailure(errorMessage: 'No hay productos en la base de datos local.'));
-  } catch (e) {
-    return Left(UnknownFailure(errorMessage: 'Error desconocido: ${e.toString()}'));
   }
-}
 
   @override
-  Future<Either<Failure, void>> rejectProduct(String id)async {
- try {
+  Future<Either<Failure, void>> rejectProduct(String id) async {
+    try {
       await localProductDataSource.rejectProduct(id);
       return Right(null);
     } on CacheException {
